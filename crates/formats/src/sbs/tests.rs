@@ -61,6 +61,33 @@ fn sniffs_sbs() {
 }
 
 #[test]
+fn distort_round_trip_preserves_signed_vectors_and_wires() {
+    let mut pkg = Package::new("Distort");
+    let mut graph = Graph::new("Signed vectors");
+    let source = graph.add_node("uniform", [0.0, 0.0]);
+    let vector = graph.add_node("uniform", [0.0, 100.0]);
+    graph.node_mut(vector).unwrap().params.insert("color".into(), Value::Color([-1.0, 0.5, 0.0, 1.0]));
+    let distort = graph.add_node("distort", [200.0, 0.0]);
+    let output = graph.add_node("output", [400.0, 0.0]);
+    graph.connect(source, "output", distort, "input").unwrap();
+    graph.connect(vector, "output", distort, "vector").unwrap();
+    graph.connect(distort, "output", output, "input").unwrap();
+    pkg.graphs.push(graph);
+
+    let bytes = write_sbs(&pkg).unwrap();
+    let read = read_sbs(&bytes, "distort.sbs", &no_linked_files).unwrap();
+    assert!(read.warnings.is_empty(), "{:?}", read.warnings);
+    let graph = &read.pkg.graphs[0];
+    let distort = graph.nodes.iter().find(|node| node.def == "distort").unwrap();
+    assert!(distort.params.is_empty());
+    let vector = graph.node(graph.input_of(distort.id, "vector").unwrap().from).unwrap();
+    assert_eq!(vector.params.get("color"), Some(&Value::Color([-1.0, 0.5, 0.0, 1.0])));
+    assert!(graph.input_of(distort.id, "input").is_some());
+    let output = graph.nodes.iter().find(|node| node.def == "output").unwrap();
+    assert_eq!(graph.input_of(output.id, "input").unwrap().from, distort.id);
+}
+
+#[test]
 fn structural_round_trip() {
     let pkg = sample_package();
     let plain = String::from_utf8(write_sbs(&pkg).unwrap()).unwrap();

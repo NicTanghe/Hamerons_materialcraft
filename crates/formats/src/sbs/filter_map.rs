@@ -6,6 +6,8 @@ pub(super) struct FilterMap {
 }
 
 pub(super) const FILTERS: &[FilterMap] = &[
+    // MaterialCraft's clean-room extension; this is not a reference-app native filter identifier.
+    FilterMap { sbs: "materialcraft_distort", def: "distort", inputs: &[("input", "input"), ("vector", "vector")], params: &[] },
     FilterMap { sbs: "motionblur", def: "motion_blur", inputs: &[("input1", "input")], params: &[("intensity", "intensity"), ("shiftangle", "shiftangle")] },
     FilterMap { sbs: "uniform", def: "uniform", inputs: &[], params: &[("outputcolor", "color"), ("colorswitch", "color_mode")] },
     FilterMap {

@@ -2,9 +2,10 @@
 
 **Current focus (2026-11-05):** native primitive editing, evaluation and SBS save/load.
 
-The old Rust procedural library has been removed. The main catalog has 30 entries: 26 native
-primitives and four graph input/output items. Functions have 85 operations; pattern graphs have
-Quadrant, Switch, Iterate and Dot. See [the primitive workflow](docs/atomic-workflow.md) for usage and limits.
+The old Rust procedural library has been removed. The main catalog has 31 entries: 26 native
+primitives, the MaterialCraft Distort extension and four graph input/output items. Functions have
+85 operations; pattern graphs have Quadrant, Switch, Iterate and Dot. See
+[the primitive workflow](docs/atomic-workflow.md) for usage and limits.
 
 Earlier percentage estimates and node counts are superseded by this change. Reference-app
 rendering parity and arbitrary SBS round trips have not been established.

@@ -35,7 +35,7 @@ fn every_node_cooks() {
             }
         }
     }
-    assert_eq!(catalog().len(), 30);
+    assert_eq!(catalog().len(), 31);
 }
 
 /// Every node cooks with each numeric parameter at a hostile value (huge, negative huge, NaN): the hard limits keep the cook bounded, finite and the right size

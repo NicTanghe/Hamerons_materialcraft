@@ -6,6 +6,7 @@ mod curve;
 mod directional_blur;
 mod directional_warp;
 mod distance;
+mod distort;
 mod dot;
 mod emboss;
 mod gradient_dynamic;

@@ -14,6 +14,7 @@ pub(crate) fn defs() -> Vec<NodeDefinition> {
         directional_blur::definition(),
         directional_warp::definition(),
         distance::definition(),
+        distort::definition(),
         emboss::definition(),
         gradient_dynamic::definition(),
         gradient_map::definition(),

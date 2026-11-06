@@ -1,7 +1,7 @@
 # Primitive editing and native SBS
 
-MaterialCraft is a clean-room implementation. The Rust catalog contains only native primitives
-and graph input/output items. SBS library nodes belong in SBS graphs; their former Rust
+MaterialCraft is a clean-room implementation. The Rust catalog contains native primitives,
+the Distort extension and graph input/output items. SBS library nodes belong in SBS graphs; their former Rust
 implementations have been removed.
 
 ## Try it
@@ -37,13 +37,35 @@ cargo +1.96.0 run -p materialcraft-engine --release --example atomic_sample -- e
 
 | Context | Entries |
 |---|---:|
-| Main graph | 26 native primitives, including processors and reroute, plus 4 input/output items |
+| Main graph | 26 native primitives, including processors and reroute, plus Distort and 4 input/output items |
 | Functions | 85 native operations |
 | FX-Map graph | Quadrant (`paramset`), Switch (`markov2`), Iterate (`addnode`), Dot (`passthrough`) |
 
 Image primitives have individual files in `crates/nodes/src/atomic/`. Function evaluation and
 pattern traversal have separate modules. Document types each live in their own file under
 `crates/core/src/`. SBS parsing and writing live under `crates/formats/src/sbs/`.
+
+### Distort
+
+Distort (`distort`) is a clean-room MaterialCraft extension. Connect a grayscale or color image
+to **Input** and a color image to **Input 2 (RG vector)** (`vector`). For each source pixel at
+`(u, v)`, it reads the source color and Input 2's RG at that position, then places the color at
+`(u + R, v + G)`. R/G directly determine direction and distance in UV units: zero is neutral,
+negative values move in the opposite direction, and a value of 1 moves one full image width or
+height. There is no separate intensity parameter or vector normalization. Blue and alpha in
+Input 2 are ignored. The vector image is resampled to the output resolution when needed.
+
+Fractional destinations distribute color to adjacent pixels with bilinear weights. Overlapping
+contributions use a deterministic weighted average, including source alpha; uncovered pixels
+are transparent black (zero for grayscale). Tiling wraps destinations at the edges; disabling
+tiling discards contributions outside the image. The input's grayscale/color kind is preserved.
+An unconnected vector is neutral; non-finite vector components act as zero.
+
+Vector values are used directly without a color-space conversion in Distort. Set Bitmap's
+**Color space** to **Linear**, or use `graph.input.bind` with `linear: true`, for imported vector
+data. Use a floating-point image format to retain negative values. This does not require OCIO.
+SBS save/load uses the MaterialCraft-specific filter identifier `materialcraft_distort`;
+the reference application is not expected to support this extension.
 
 ## Files and execution
 
